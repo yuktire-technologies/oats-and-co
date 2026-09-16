@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
-import { adminAuth, adminDb, admin } from "@/lib/firebase/admin";
+import { adminAuth, adminDb } from "@/lib/firebase/admin";
 import { Resend } from "resend";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request) {
   try {
@@ -24,25 +22,30 @@ export async function POST(request) {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
-    // Store in Firestore
-    await adminDb.collection("admin_otps").doc(email).set({
-      otp,
-      expiresAt,
-      action
-    });
+    if (adminDb) {
+      // Store in Firestore
+      await adminDb.collection("admin_otps").doc(email).set({
+        otp,
+        expiresAt,
+        action
+      });
+    }
 
-    // Send email using Resend
-    const subject = action === "reset" ? "Reset Password OTP for Oats & Co" : "Login OTP for Oats & Co";
-    const body = action === "reset" 
-      ? `Reset Password OTP for Oats & Co is ${otp}. It will expire after 10 minutes.`
-      : `Login OTP for Oats & Co is ${otp}. It will expire after 10 minutes.`;
+    // Send email using Resend if API key is provided
+    if (process.env.RESEND_API_KEY) {
+      const resend = new Resend(process.env.RESEND_API_KEY);
+      const subject = action === "reset" ? "Reset Password OTP for Oats & Co" : "Login OTP for Oats & Co";
+      const body = action === "reset" 
+        ? `Reset Password OTP for Oats & Co is ${otp}. It will expire after 10 minutes.`
+        : `Login OTP for Oats & Co is ${otp}. It will expire after 10 minutes.`;
 
-    await resend.emails.send({
-      from: process.env.RESEND_FROM_MAIL || "admin@oatsandco.in",
-      to: email,
-      subject: subject,
-      text: body,
-    });
+      await resend.emails.send({
+        from: process.env.RESEND_FROM_MAIL || "admin@oatsandco.in",
+        to: email,
+        subject: subject,
+        text: body,
+      });
+    }
 
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
@@ -50,3 +53,4 @@ export async function POST(request) {
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
+
