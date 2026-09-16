@@ -32,10 +32,6 @@ if (!getApps().length) {
           privateKey: pKey,
         }),
       });
-    } else {
-      app = initializeApp({
-        projectId: process.env.FIREBASE_ADMIN_PROJECT_ID || "oats-and-co-demo",
-      });
     }
   } catch (error) {
     console.error("Firebase Admin Initialization Error:", error.message);
@@ -45,8 +41,9 @@ if (!getApps().length) {
 }
 
 export const isFirebaseConfigured = isConfigured;
-export const adminAuth = app ? getAuth(app) : null;
-export const adminDb = app ? getFirestore(app) : null;
+export const adminAuth = (app && isConfigured) ? getAuth(app) : null;
+export const adminDb = (app && isConfigured) ? getFirestore(app) : null;
+
 
 
 
