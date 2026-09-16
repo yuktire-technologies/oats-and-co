@@ -20,9 +20,10 @@ const isConfigured = Boolean(
   pKey.includes("-----BEGIN PRIVATE KEY-----")
 );
 
-if (typeof window === "undefined" && isConfigured) {
+if (typeof window === "undefined" && isConfigured && admin) {
   try {
-    if (!admin.apps.length) {
+    const apps = admin.apps || [];
+    if (!apps.length) {
       app = admin.initializeApp({
         credential: admin.credential.cert({
           projectId: process.env.FIREBASE_ADMIN_PROJECT_ID,
@@ -31,7 +32,7 @@ if (typeof window === "undefined" && isConfigured) {
         }),
       });
     } else {
-      app = admin.apps[0];
+      app = apps[0];
     }
   } catch (error) {
     console.error("Firebase Admin Initialization Error:", error.message);
