@@ -1,6 +1,4 @@
-import { getApps, initializeApp, cert } from "firebase-admin/app";
-import { getAuth } from "firebase-admin/auth";
-import { getFirestore } from "firebase-admin/firestore";
+import admin from "firebase-admin";
 
 let app;
 
@@ -22,27 +20,27 @@ const isConfigured = Boolean(
   pKey.includes("-----BEGIN PRIVATE KEY-----")
 );
 
-if (!getApps().length) {
+if (typeof window === "undefined" && isConfigured) {
   try {
-    if (isConfigured) {
-      app = initializeApp({
-        credential: cert({
+    if (!admin.apps.length) {
+      app = admin.initializeApp({
+        credential: admin.credential.cert({
           projectId: process.env.FIREBASE_ADMIN_PROJECT_ID,
           clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
           privateKey: pKey,
         }),
       });
+    } else {
+      app = admin.apps[0];
     }
   } catch (error) {
     console.error("Firebase Admin Initialization Error:", error.message);
   }
-} else {
-  app = getApps()[0];
 }
 
 export const isFirebaseConfigured = isConfigured;
-export const adminAuth = (app && isConfigured) ? getAuth(app) : null;
-export const adminDb = (app && isConfigured) ? getFirestore(app) : null;
+export const adminAuth = (app && isConfigured) ? admin.auth() : null;
+export const adminDb = (app && isConfigured) ? admin.firestore() : null;
 
 
 

@@ -2,9 +2,6 @@
 const nextConfig = {
   serverExternalPackages: [
     "firebase-admin",
-    "firebase-admin/app",
-    "firebase-admin/auth",
-    "firebase-admin/firestore",
     "cloudinary",
     "resend",
   ],
