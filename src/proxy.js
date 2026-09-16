@@ -7,7 +7,7 @@ function isAdminSession(sessionValue) {
   return false;
 }
 
-export function middleware(request) {
+export function proxy(request) {
   const session = request.cookies.get('session')?.value;
   const pathname = request.nextUrl.pathname;
 
@@ -41,8 +41,6 @@ export function middleware(request) {
   return NextResponse.next();
 }
 
-export { middleware as proxy };
-export default middleware;
 
 export const config = {
   matcher: ['/admin', '/admin/:path*', '/profile', '/orders'],
