@@ -81,7 +81,7 @@ export default async function HomePage() {
             isAvailable: Boolean(data.isAvailable ?? true),
           };
         }).filter(a => a.isAvailable === true);
-      } catch (aErr) {}
+      } catch (aErr) { }
 
       // 5. Fetch accepted customer reviews
       let acceptedReviews = [];
@@ -90,15 +90,15 @@ export default async function HomePage() {
         acceptedReviews = reviewsSnapshot.docs
           .map(doc => {
             const data = doc.data();
-            return {
+            return JSON.parse(JSON.stringify({
               id: doc.id,
               ...data,
               createdAt: data.createdAt?.toDate ? data.createdAt.toDate().toISOString() : (data.createdAt ? new Date(data.createdAt).toISOString() : new Date().toISOString()),
               updatedAt: data.updatedAt?.toDate ? data.updatedAt.toDate().toISOString() : null,
-            };
+            }));
           })
           .filter(r => r.status === "Accepted");
-      } catch (e) {}
+      } catch (e) { }
 
       initialItems = initialItems.map(item => {
         const itemReviews = acceptedReviews.filter(r => {
@@ -133,11 +133,11 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-full pb-24">
-      <HomeClient 
-        initialItems={initialItems} 
+      <HomeClient
+        initialItems={initialItems}
         initialAddons={initialAddons || []}
-        initialCoupons={initialCoupons} 
-        initialSettings={initialSettings} 
+        initialCoupons={initialCoupons}
+        initialSettings={initialSettings}
         initialReviews={initialReviewsData || []}
       />
     </div>

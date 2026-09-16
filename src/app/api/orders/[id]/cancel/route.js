@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth-server";
-import { adminDb } from "@/lib/firebase/admin";
+import { adminDb, isFirebaseConfigured } from "@/lib/firebase/admin";
 
 export async function POST(request, context) {
   try {
@@ -9,7 +9,7 @@ export async function POST(request, context) {
     const orderId = params.id;
     const { cancelReason } = await request.json().catch(() => ({}));
 
-    if (adminDb) {
+    if (adminDb && isFirebaseConfigured) {
       const docRef = adminDb.collection("orders").doc(orderId);
       const doc = await docRef.get();
 
