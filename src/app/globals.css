@@ -1,0 +1,82 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-forest: #0B2B1D;
+  --color-green: #234B32;
+  --color-sage: #71866A;
+  --color-gold: #B68A3A;
+  --color-gold-light: #D5B66A;
+  --color-cream: #FFFFFF;
+  --color-ivory: #FFFFFF;
+  --color-text-main: #111827;
+  --color-text-muted: #6B7280;
+  --color-border-main: #E5E7EB;
+  --color-orange: #E85D04;
+  /* For CTAs */
+  --font-serif: var(--font-fraunces);
+  --font-sans: var(--font-jakarta);
+
+  --animate-fade-in: fade-in 0.2s ease-out;
+  --animate-slide-up: slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root {
+  --forest: #0B2B1D;
+  --green: #234B32;
+  --sage: #71866A;
+  --gold: #B68A3A;
+  --gold-light: #D5B66A;
+  --cream: #FFFFFF;
+  --ivory: #FFFFFF;
+  --text-main: #111827;
+  --text-muted: #6B7280;
+  --border-main: #E5E7EB;
+  --orange: #E85D04;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border-main;
+  }
+
+  body {
+    @apply bg-white text-text-main font-sans;
+  }
+
+  button,
+  [role="button"],
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"] {
+    @apply cursor-pointer;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-serif;
+  }
+}
