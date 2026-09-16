@@ -5,9 +5,12 @@ const nextConfig = {
     "firebase-admin/app",
     "firebase-admin/auth",
     "firebase-admin/firestore",
+    "cloudinary",
+    "resend",
   ],
 };
 
 export default nextConfig;
+
 
 

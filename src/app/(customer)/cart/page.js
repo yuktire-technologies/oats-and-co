@@ -196,7 +196,8 @@ export default function CartPage() {
     }
 
     if (!locationObj || !locationObj.address) {
-      setLocationModalOpen(true);
+      alert('Please select a delivery location from the Home page.');
+      router.push('/');
       return;
     }
 
@@ -403,6 +404,19 @@ export default function CartPage() {
                 <span className="font-extrabold uppercase text-[10px] tracking-wider text-emerald-800">Note:</span>
                 <span className="font-semibold">Upto 2 kms Free Delivery</span>
                 <span className="font-semibold">if exceed 2 kms then 10 rupees for each km</span>
+                <span className="font-semibold mt-1">e.g,</span>
+                <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 ml-2 font-medium">
+                  <span>2 kms - Free Delivery</span>
+                  <span>3 km - 30 rupees</span>
+                  <span>4 km - 30 rupees</span>
+                  <span>5 km - 50 rupees</span>
+                  <span>6 km - 30 rupees</span>
+                  <span>7 km - 30 rupees</span>
+                  <span>8 km - 50 rupees</span>
+                  <span>9 km - 30 rupees</span>
+                  <span>10 km - 50 rupees</span>
+                </div>
+                <span className="font-semibold mt-1">Note: Only 10 kms is upper limit for delivery</span>
               </div>
             </div>
           </div>
