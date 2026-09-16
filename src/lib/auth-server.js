@@ -25,7 +25,7 @@ export async function getCurrentUser() {
             role: "customer"
           };
         }
-      } catch (e) {}
+      } catch (e) { }
     }
     return {
       uid: "user_customer_demo",
@@ -62,7 +62,7 @@ export async function getCurrentUser() {
 
 export async function requireAdmin() {
   const user = await getCurrentUser();
-  
+
   if (user && (user.role === "admin" || user.email === "admin@oatsandco.in" || user.email === "test@gmail.com")) {
     return user;
   }
