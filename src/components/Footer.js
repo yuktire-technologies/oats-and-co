@@ -29,20 +29,20 @@ export default function Footer() {
 
           {/* Contact Us Col */}
           <div className="flex flex-col gap-3">
-            <h4 className="text-xs font-serif font-extrabold text-forest uppercase tracking-widest">Contact Us</h4>
+            <h4 className="text-xs font-serif font-extrabold text-forest uppercase tracking-widest">Connect With Us</h4>
             <div className="flex flex-col gap-2.5 text-sm font-sans text-text-main">
               <a
-                href="tel:+918341365468"
+                href="tel:+9618147503"
                 className="flex items-center gap-2.5 hover:text-forest transition-colors w-fit font-medium"
               >
                 <div className="w-8 h-8 rounded-xl bg-gray-100 border border-gray-200 flex items-center justify-center text-forest">
                   <Phone size={15} />
                 </div>
-                <span>+91 8341365468</span>
+                <span>+91 9618147503</span>
               </a>
 
               <a
-                href="https://wa.me/918341365468"
+                href="https://wa.me/9618147503"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2.5 hover:text-emerald-700 transition-colors w-fit font-medium"
@@ -50,7 +50,23 @@ export default function Footer() {
                 <div className="w-8 h-8 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700">
                   <MessageCircle size={15} />
                 </div>
-                <span>Whatsapp Us: +91 8341365468</span>
+                <span>Whatsapp Us: +91 9618147503</span>
+              </a>
+
+              <a
+                href="https://www.instagram.com/the_oats_co"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2.5 hover:text-rose-600 transition-colors w-fit font-medium"
+              >
+                <div className="w-8 h-8 rounded-xl bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-600">
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                  </svg>
+                </div>
+                <span>Follow on Instagram (@the_oats_co)</span>
               </a>
             </div>
           </div>

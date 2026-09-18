@@ -188,8 +188,8 @@ export default function OrdersClient({ initialOrders }) {
               />
 
               <div className="mt-6 flex justify-center">
-                <a href="tel:+918341365468" className="inline-flex items-center gap-2 text-forest bg-forest/10 px-4 py-2 rounded-full font-bold text-sm hover:bg-forest/20 transition-colors">
-                  <Phone size={16} /> Call Support (+91 8341365468)
+                <a href="tel:+919618147503" className="inline-flex items-center gap-2 text-forest bg-forest/10 px-4 py-2 rounded-full font-bold text-sm hover:bg-forest/20 transition-colors">
+                  <Phone size={16} /> Call Support (+91 9618147503)
                 </a>
               </div>
             </div>
