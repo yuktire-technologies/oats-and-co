@@ -41,6 +41,16 @@ export default function HomeClient({ initialItems, initialAddons = [], initialCo
     setVisibleReviewsCount(5);
   }, [selectedItem]);
 
+  const [nowTime, setNowTime] = useState(null);
+
+  useEffect(() => {
+    setNowTime(new Date());
+    const intervalId = setInterval(() => {
+      setNowTime(new Date());
+    }, 1000);
+    return () => clearInterval(intervalId);
+  }, []);
+
   const searchContainerRef = useRef(null);
   const { cart, addToCart, updateQuantity, getQuantity, totalItems, subTotal } = useCart();
   const router = useRouter();
@@ -393,17 +403,21 @@ export default function HomeClient({ initialItems, initialAddons = [], initialCo
       return 0;
     });
 
-  // Swiggy style 30 mins closing warning alert calculation
+  // Swiggy style 30 mins closing warning alert calculation & dynamic countdown
   let showClosingWarning = false;
-  if (statusMode === "Open" && openTime && closeTime) {
-    const now = new Date();
-    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+  let remainingMinsText = "30 mins";
+  if (statusMode === "Open" && openTime && closeTime && nowTime) {
+    const currentMinutes = nowTime.getHours() * 60 + nowTime.getMinutes();
+    const currentSeconds = nowTime.getSeconds();
     const [closeH, closeM] = closeTime.split(":").map(Number);
     const closeMinutes = closeH * 60 + closeM;
     const warningStartMinutes = closeMinutes - 30;
 
     if (currentMinutes >= warningStartMinutes && currentMinutes < closeMinutes) {
       showClosingWarning = true;
+      const totalSecsRemaining = (closeMinutes * 60) - (currentMinutes * 60 + currentSeconds);
+      const mins = Math.max(1, Math.ceil(totalSecsRemaining / 60));
+      remainingMinsText = `${mins} min${mins !== 1 ? 's' : ''}`;
     }
   }
 
@@ -1025,10 +1039,10 @@ export default function HomeClient({ initialItems, initialAddons = [], initialCo
           <div className="max-w-md mx-auto bg-gradient-to-r from-red-600 to-amber-600 text-white rounded-2xl p-3.5 shadow-xl border border-red-500 flex items-center justify-between animate-bounce">
             <div className="flex items-center gap-2 font-sans text-xs sm:text-sm font-extrabold tracking-wide">
               <span className="bg-white text-red-600 p-1 rounded-full text-xs shrink-0">⏰</span>
-              <span>Hurry! Delivery Closes in 30 mins</span>
+              <span>Hurry! Delivery Closes in {remainingMinsText}</span>
             </div>
             <span className="text-[11px] font-mono bg-black/20 px-2 py-1 rounded-lg">
-              Until {closeTime}
+              Until {formattedCloseTime}
             </span>
           </div>
         </div>
