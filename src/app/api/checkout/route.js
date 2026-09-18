@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { adminDb, isFirebaseConfigured } from "@/lib/firebase/admin";
 import { FieldValue } from "firebase-admin/firestore";
 import { getCurrentUser } from "@/lib/auth-server";
-import { getDistanceInKm, calculateDeliveryFee, CENTER_LOCATION } from "@/lib/location";
+import { getDistanceInKm, calculateDeliveryFee, CENTER_LOCATION, isTimeWithinRange } from "@/lib/location";
 
 export async function POST(request) {
   try {
@@ -44,17 +44,9 @@ export async function POST(request) {
         return NextResponse.json({ error: `Sorry. ${settings.status}` }, { status: 400 });
       }
 
-      // Time check logic
+      // Time check logic (IST Timezone Aware)
       if (settings.openTime && settings.closeTime) {
-        const now = new Date();
-        const currentMinutes = now.getHours() * 60 + now.getMinutes();
-        const [openH, openM] = settings.openTime.split(":").map(Number);
-        const [closeH, closeM] = settings.closeTime.split(":").map(Number);
-        
-        const openMinutes = openH * 60 + openM;
-        const closeMinutes = closeH * 60 + closeM;
-
-        if (currentMinutes < openMinutes || currentMinutes > closeMinutes) {
+        if (!isTimeWithinRange(settings.openTime, settings.closeTime)) {
           const formatTime12 = (time24Str) => {
             if (!time24Str) return "";
             if (time24Str.includes("AM") || time24Str.includes("PM")) return time24Str;
@@ -151,8 +143,11 @@ export async function POST(request) {
     const counterDocRef = adminDb.collection("settings").doc("orderCounter");
     const counterDoc = await counterDocRef.get();
     let currentCount = 1;
-    if (counterDoc.exists) {
-      currentCount = counterDoc.data().count + 1;
+    if (counterDoc.exists && counterDoc.data()) {
+      const existingCount = Number(counterDoc.data().count);
+      if (!isNaN(existingCount) && existingCount > 0) {
+        currentCount = existingCount + 1;
+      }
     }
     await counterDocRef.set({ count: currentCount }, { merge: true });
     

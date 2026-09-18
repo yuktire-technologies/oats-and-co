@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { useRouter } from "next/navigation";
 import debounce from "lodash.debounce";
-import { CENTER_LOCATION, getDistanceInKm } from "@/lib/location";
+import { CENTER_LOCATION, getDistanceInKm, isTimeWithinRange, getISTMinutes } from "@/lib/location";
 
 export default function HomeClient({ initialItems, initialAddons = [], initialCoupons = [], initialSettings, initialReviews = [] }) {
   const [items, setItems] = useState(() => (initialItems || []).filter(i => i.isAvailable === true));
@@ -365,14 +365,7 @@ export default function HomeClient({ initialItems, initialAddons = [], initialCo
     }
 
     if (openTime && closeTime) {
-      const now = new Date();
-      const currentMinutes = now.getHours() * 60 + now.getMinutes();
-      const [openH, openM] = openTime.split(":").map(Number);
-      const [closeH, closeM] = closeTime.split(":").map(Number);
-      const openMinutes = openH * 60 + openM;
-      const closeMinutes = closeH * 60 + closeM;
-
-      if (currentMinutes < openMinutes || currentMinutes > closeMinutes) {
+      if (!isTimeWithinRange(openTime, closeTime)) {
         setAlertModal({
           isOpen: true,
           message: `Delivery is available from ${formattedOpenTime} to ${formattedCloseTime}. So, please order between that time`
@@ -407,7 +400,7 @@ export default function HomeClient({ initialItems, initialAddons = [], initialCo
   let showClosingWarning = false;
   let remainingMinsText = "30 mins";
   if (statusMode === "Open" && openTime && closeTime && nowTime) {
-    const currentMinutes = nowTime.getHours() * 60 + nowTime.getMinutes();
+    const currentMinutes = getISTMinutes();
     const currentSeconds = nowTime.getSeconds();
     const [closeH, closeM] = closeTime.split(":").map(Number);
     const closeMinutes = closeH * 60 + closeM;

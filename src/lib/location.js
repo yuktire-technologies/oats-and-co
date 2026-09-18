@@ -45,3 +45,39 @@ export function calculateDeliveryFee(distanceInKm) {
   return feeMap[km] !== undefined ? feeMap[km] : 30;
 }
 
+// Get current minutes in Indian Standard Time (IST, Asia/Kolkata)
+export function getISTMinutes() {
+  const now = new Date();
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Asia/Kolkata",
+    hour: "numeric",
+    minute: "numeric",
+    hour12: false
+  });
+  const parts = formatter.formatToParts(now);
+  let h = 0, m = 0;
+  for (const part of parts) {
+    if (part.type === "hour") h = parseInt(part.value, 10);
+    if (part.type === "minute") m = parseInt(part.value, 10);
+  }
+  if (h === 24) h = 0;
+  return h * 60 + m;
+}
+
+// Check if current IST time is within openTime and closeTime range
+export function isTimeWithinRange(openTimeStr, closeTimeStr) {
+  if (!openTimeStr || !closeTimeStr) return true;
+  const currentMinutes = getISTMinutes();
+  const [openH, openM] = openTimeStr.split(":").map(Number);
+  const [closeH, closeM] = closeTimeStr.split(":").map(Number);
+  const openMinutes = openH * 60 + openM;
+  const closeMinutes = closeH * 60 + closeM;
+
+  if (closeMinutes >= openMinutes) {
+    return currentMinutes >= openMinutes && currentMinutes <= closeMinutes;
+  } else {
+    return currentMinutes >= openMinutes || currentMinutes <= closeMinutes;
+  }
+}
+
+
