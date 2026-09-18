@@ -10,6 +10,7 @@ export async function POST(request) {
     // If it's a login action, verify the idToken to get the email securely
     if (action === "login") {
       if (!idToken) return NextResponse.json({ error: "Missing token" }, { status: 401 });
+      if (!adminAuth) return NextResponse.json({ error: "Server authentication service unavailable" }, { status: 500 });
       const decodedToken = await adminAuth.verifyIdToken(idToken);
       email = decodedToken.email;
     }

@@ -19,14 +19,6 @@ export default function AdminLoginPage() {
 
   const router = useRouter();
 
-  useEffect(() => {
-    try {
-      const cookie = document.cookie || "";
-      if (cookie.includes("session=") && !cookie.includes("mock_customer")) {
-        router.push("/admin/dashboard");
-      }
-    } catch (e) { }
-  }, [router]);
 
   useEffect(() => {
     let interval;

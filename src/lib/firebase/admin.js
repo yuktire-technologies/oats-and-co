@@ -1,4 +1,6 @@
-import admin from "firebase-admin";
+import { initializeApp, cert, getApps } from "firebase-admin/app";
+import { getAuth } from "firebase-admin/auth";
+import { getFirestore } from "firebase-admin/firestore";
 
 let app;
 
@@ -20,12 +22,12 @@ const isConfigured = Boolean(
   pKey.includes("-----BEGIN PRIVATE KEY-----")
 );
 
-if (typeof window === "undefined" && isConfigured && admin) {
+if (typeof window === "undefined" && isConfigured) {
   try {
-    const apps = admin.apps || [];
+    const apps = getApps();
     if (!apps.length) {
-      app = admin.initializeApp({
-        credential: admin.credential.cert({
+      app = initializeApp({
+        credential: cert({
           projectId: process.env.FIREBASE_ADMIN_PROJECT_ID,
           clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
           privateKey: pKey,
@@ -40,8 +42,9 @@ if (typeof window === "undefined" && isConfigured && admin) {
 }
 
 export const isFirebaseConfigured = isConfigured;
-export const adminAuth = (app && isConfigured) ? admin.auth() : null;
-export const adminDb = (app && isConfigured) ? admin.firestore() : null;
+export const adminAuth = (app && isConfigured) ? getAuth(app) : null;
+export const adminDb = (app && isConfigured) ? getFirestore(app) : null;
+
 
 
 

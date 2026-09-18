@@ -9,6 +9,10 @@ export async function POST(request) {
       return NextResponse.json({ error: "Missing token or OTP" }, { status: 400 });
     }
 
+    if (!adminAuth || !adminDb) {
+      return NextResponse.json({ error: "Server authentication service unavailable" }, { status: 500 });
+    }
+
     // Verify token to get email
     const decodedToken = await adminAuth.verifyIdToken(idToken);
     const email = decodedToken.email;
