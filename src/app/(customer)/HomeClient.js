@@ -133,10 +133,8 @@ export default function HomeClient({ initialItems, initialAddons = [], initialCo
             localStorage.setItem("deliveryLocationData", JSON.stringify(newLoc));
             localStorage.setItem("deliveryLocation", data.locality || data.address);
             setLocationModalOpen(false);
-            if (navigateToCartOnLocation) {
-              setNavigateToCartOnLocation(false);
-              router.push('/cart');
-            }
+            setNavigateToCartOnLocation(false);
+            router.push('/cart');
           } else {
             // Client-side fallback if reverse geocoding API has network issue
             const { getDistanceInKm } = await import("@/lib/location");
@@ -164,10 +162,8 @@ export default function HomeClient({ initialItems, initialAddons = [], initialCo
             localStorage.setItem("deliveryLocationData", JSON.stringify(newLoc));
             localStorage.setItem("deliveryLocation", newLoc.address);
             setLocationModalOpen(false);
-            if (navigateToCartOnLocation) {
-              setNavigateToCartOnLocation(false);
-              router.push('/cart');
-            }
+            setNavigateToCartOnLocation(false);
+            router.push('/cart');
           }
         } catch (err) {
           console.error("Reverse geocoding error:", err);
@@ -423,30 +419,8 @@ export default function HomeClient({ initialItems, initialAddons = [], initialCo
 
   return (
     <div className="flex flex-col h-full bg-white font-sans">
-      {/* Sub-Header / Location & Search */}
+      {/* Sub-Header / Delivery Timings & Search */}
       <header className="sticky top-[10px] sm:top-0 z-30 bg-white/95 backdrop-blur-md shadow-xs border-b border-gray-200 px-4 py-3 flex flex-col gap-3">
-        <div className="flex items-center justify-between">
-          <div
-            onClick={() => setLocationModalOpen(true)}
-            className="flex items-center gap-2 text-forest cursor-pointer hover:opacity-80 transition-opacity max-w-full overflow-hidden group"
-          >
-            <div className="w-8 h-8 rounded-full bg-forest/10 flex items-center justify-center text-forest shrink-0 group-hover:bg-forest group-hover:text-white transition-colors">
-              <MapPin size={18} />
-            </div>
-            <div className="flex flex-col overflow-hidden text-left">
-              <div className="flex items-center gap-1">
-                <span className="text-[10px] font-extrabold uppercase tracking-wider text-text-muted">
-                  {locationObj.locality ? locationObj.locality : "Delivery Location"}
-                </span>
-                <ChevronDown size={12} className="text-text-muted group-hover:text-forest transition-transform" />
-              </div>
-              <span className="text-sm font-sans font-bold truncate text-text-main">
-                {locationObj.address || locationObj.locality || "Select delivery location"}
-              </span>
-            </div>
-          </div>
-        </div>
-
         {/* Delivery Timings / Status Banner */}
         <div className="bg-gray-50 border border-gray-200 rounded-xl py-2 px-3 text-center text-xs font-extrabold font-sans text-forest flex items-center justify-center gap-2 shadow-2xs">
           <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -995,34 +969,6 @@ export default function HomeClient({ initialItems, initialAddons = [], initialCo
             </div>
           )}
 
-          {/* Current Saved Location Preview */}
-          {locationObj.address && (
-            <div
-              onClick={() => {
-                setLocationModalOpen(false);
-                if (navigateToCartOnLocation) {
-                  setNavigateToCartOnLocation(false);
-                  router.push('/cart');
-                }
-              }}
-              className="bg-emerald-50/70 border border-emerald-200/80 hover:bg-emerald-100/80 rounded-2xl p-4 flex items-center justify-between gap-3 text-forest mt-1 cursor-pointer transition-colors group"
-            >
-              <div className="flex items-start gap-3 overflow-hidden">
-                <MapPin size={20} className="text-emerald-700 shrink-0 mt-0.5" />
-                <div className="flex flex-col text-left overflow-hidden">
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-800">
-                    {locationObj.locality || "Current Location"}
-                  </span>
-                  <span className="text-xs font-bold text-forest mt-0.5 line-clamp-2">
-                    {locationObj.address}
-                  </span>
-                </div>
-              </div>
-              <Button size="sm" className="bg-forest text-white text-xs font-extrabold shrink-0">
-                Deliver Here
-              </Button>
-            </div>
-          )}
         </div>
       </Modal>
 

@@ -3,6 +3,7 @@ import { adminDb, isFirebaseConfigured } from "@/lib/firebase/admin";
 import { FieldValue } from "firebase-admin/firestore";
 import { getCurrentUser } from "@/lib/auth-server";
 import { getDistanceInKm, calculateDeliveryFee, CENTER_LOCATION, isTimeWithinRange } from "@/lib/location";
+import { sendNotification } from "@/lib/notifications";
 
 export async function POST(request) {
   try {
@@ -19,10 +20,11 @@ export async function POST(request) {
     // Validate 10 KM radius if latitude & longitude are supplied
     if (lat && lng) {
       const dist = getDistanceInKm(CENTER_LOCATION.lat, CENTER_LOCATION.lng, Number(lat), Number(lng));
-      if (dist > CENTER_LOCATION.maxRadiusKm) {
+      const calculatedFee = calculateDeliveryFee(dist);
+      if (dist > CENTER_LOCATION.maxRadiusKm || calculatedFee === null) {
         return NextResponse.json({ error: CENTER_LOCATION.outOfRangeMessage }, { status: 400 });
       }
-      deliveryFee = calculateDeliveryFee(dist) || 0;
+      deliveryFee = calculatedFee || 0;
     }
 
     if (!items || !items.length) {
@@ -188,6 +190,13 @@ export async function POST(request) {
     };
 
     const newOrderRef = await adminDb.collection("orders").add(orderData);
+
+    sendNotification({
+      role: "admin",
+      title: "New Order Received",
+      body: `${validatedItems.length} items for ₹${grandTotal}`,
+      data: { url: `/admin/orders` }
+    }).catch(() => {});
 
     return NextResponse.json({ success: true, orderId, docId: newOrderRef.id }, { status: 200 });
 

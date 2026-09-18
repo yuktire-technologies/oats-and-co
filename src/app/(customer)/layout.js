@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, ClipboardList, User } from "lucide-react";
 import Footer from "@/components/Footer";
+import FCMProvider from "@/components/FCMProvider";
 
 export default function CustomerLayout({ children }) {
   const pathname = usePathname();
@@ -17,6 +18,7 @@ export default function CustomerLayout({ children }) {
 
   return (
     <div className="flex flex-col min-h-[100dvh] bg-cream relative pb-16 sm:pb-0 sm:flex-row">
+      <FCMProvider />
 
       {/* Mobile Top Header */}
       <header className="sm:hidden flex items-center justify-between px-4 py-3 bg-ivory border-b border-border-main sticky top-0 z-50 shadow-xs">

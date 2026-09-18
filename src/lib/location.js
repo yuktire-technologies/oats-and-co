@@ -25,24 +25,13 @@ export const CENTER_LOCATION = {
 };
 
 export function calculateDeliveryFee(distanceInKm) {
-  if (distanceInKm == null || isNaN(distanceInKm) || distanceInKm <= 2) {
-    return 0;
-  }
+  if (distanceInKm == null || isNaN(distanceInKm)) return 0;
+  if (distanceInKm <= 2) return 0;
+
   const km = Math.ceil(distanceInKm);
   if (km > 10) return null;
 
-  const feeMap = {
-    3: 30,
-    4: 30,
-    5: 50,
-    6: 30,
-    7: 30,
-    8: 50,
-    9: 30,
-    10: 50,
-  };
-
-  return feeMap[km] !== undefined ? feeMap[km] : 30;
+  return km * 10;
 }
 
 // Get current minutes in Indian Standard Time (IST, Asia/Kolkata)

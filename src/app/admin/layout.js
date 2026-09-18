@@ -18,6 +18,7 @@ import {
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { useAuth } from "@/context/AuthContext";
+import FCMProvider from "@/components/FCMProvider";
 
 export default function AdminLayout({ children }) {
   const pathname = usePathname();
@@ -61,6 +62,7 @@ export default function AdminLayout({ children }) {
 
   return (
     <div className="flex flex-col lg:flex-row h-screen bg-cream overflow-hidden font-sans">
+      <FCMProvider />
       
       {/* Mobile Top Header Bar (Hidden on desktop) */}
       <header className="lg:hidden bg-ivory border-b border-border-main/80 px-4 py-3 flex items-center justify-between shrink-0 z-30 shadow-2xs">

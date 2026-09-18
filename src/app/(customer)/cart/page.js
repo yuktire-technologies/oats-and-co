@@ -45,8 +45,10 @@ export default function CartPage() {
     distanceInKm = getDistanceInKm(CENTER_LOCATION.lat, CENTER_LOCATION.lng, Number(locationObj.lat), Number(locationObj.lng));
   }
 
-  const deliveryFee = distanceInKm !== null ? calculateDeliveryFee(distanceInKm) : 0;
-  const grandTotal = Math.max(0, subTotal - discountAmount + (deliveryFee || 0));
+  const rawFee = distanceInKm !== null ? calculateDeliveryFee(distanceInKm) : 0;
+  const isOutOfRange = distanceInKm !== null && (distanceInKm > CENTER_LOCATION.maxRadiusKm || rawFee === null);
+  const deliveryFee = (!isOutOfRange && rawFee !== null) ? rawFee : 0;
+  const grandTotal = Math.max(0, subTotal - discountAmount + deliveryFee);
 
   const detectCurrentLocation = async () => {
     setLocationError("");
@@ -201,7 +203,7 @@ export default function CartPage() {
       return;
     }
 
-    if (distanceInKm !== null && distanceInKm > CENTER_LOCATION.maxRadiusKm) {
+    if (isOutOfRange) {
       setOutOfRangeModal({ isOpen: true, message: CENTER_LOCATION.outOfRangeMessage });
       return;
     }
@@ -408,13 +410,9 @@ export default function CartPage() {
                 <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 ml-2 font-medium">
                   <span>2 kms - Free Delivery</span>
                   <span>3 km - 30 rupees</span>
-                  <span>4 km - 30 rupees</span>
+                  <span>4 km - 40 rupees</span>
                   <span>5 km - 50 rupees</span>
-                  <span>6 km - 30 rupees</span>
-                  <span>7 km - 30 rupees</span>
-                  <span>8 km - 50 rupees</span>
-                  <span>9 km - 30 rupees</span>
-                  <span>10 km - 50 rupees</span>
+                  <span>and so on ...</span>
                 </div>
                 <span className="font-semibold mt-1">Note: Only 10 kms is upper limit for delivery</span>
               </div>
@@ -429,13 +427,13 @@ export default function CartPage() {
       </div>
 
       {/* Sticky Confirm Footer */}
-      <div className="fixed bottom-16 sm:bottom-0 left-0 right-0 pb-1 bg-ivory border-t border-border-main z-30 shadow-md">
-        <div className="max-w-lg mx-auto">
+      <div className="fixed bottom-16 sm:bottom-0 left-0 right-0 p-2 sm:p-3 bg-ivory/95 backdrop-blur-md border-t border-border-main z-30 shadow-md">
+        <div className="max-w-lg mx-auto px-1 sm:px-0">
           <Button
-            className="w-full h-14 text-lg bg-orange hover:bg-orange/90 shadow-lg"
+            className="w-full h-11 sm:h-13 text-sm sm:text-base font-extrabold bg-orange hover:bg-orange/90 shadow-md sm:shadow-lg rounded-xl flex items-center justify-center transition-all px-4"
             onClick={handleConfirmOrderClick}
           >
-            {user ? `Confirm Order ₹${grandTotal}` : "Login/Create Account to Place Order"}
+            <span className="truncate">{user ? `Confirm Order ₹${grandTotal}` : "Login/Create Account to Place Order"}</span>
           </Button>
         </div>
       </div>
