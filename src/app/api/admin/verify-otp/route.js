@@ -15,10 +15,14 @@ export async function POST(request) {
 
     // Verify token to get email
     const decodedToken = await adminAuth.verifyIdToken(idToken);
-    const email = decodedToken.email;
+    const emailKey = (decodedToken.email || "").toLowerCase().trim();
+
+    if (!emailKey) {
+      return NextResponse.json({ error: "No email associated with account" }, { status: 400 });
+    }
 
     // Check OTP in Firestore
-    const otpDocRef = adminDb.collection("admin_otps").doc(email);
+    const otpDocRef = adminDb.collection("admin_otps").doc(emailKey);
     const otpDoc = await otpDocRef.get();
 
     if (!otpDoc.exists) {
@@ -27,11 +31,18 @@ export async function POST(request) {
 
     const data = otpDoc.data();
     
-    if (data.otp !== otp) {
+    if (String(data.otp).trim() !== String(otp).trim()) {
       return NextResponse.json({ error: "Invalid OTP" }, { status: 400 });
     }
 
-    if (new Date() > data.expiresAt.toDate()) {
+    let expiryDate;
+    if (data.expiresAt?.toDate) {
+      expiryDate = data.expiresAt.toDate();
+    } else if (data.expiresAt) {
+      expiryDate = new Date(data.expiresAt);
+    }
+
+    if (expiryDate && new Date() > expiryDate) {
       return NextResponse.json({ error: "OTP expired" }, { status: 400 });
     }
 

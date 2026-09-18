@@ -19,18 +19,22 @@ export async function POST(request) {
       return NextResponse.json({ error: "Email required" }, { status: 400 });
     }
 
+    if (!adminDb) {
+      return NextResponse.json({ error: "Database service unavailable" }, { status: 500 });
+    }
+
+    const emailKey = email.toLowerCase().trim();
+
     // Generate 6-digit OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
-    if (adminDb) {
-      // Store in Firestore
-      await adminDb.collection("admin_otps").doc(email).set({
-        otp,
-        expiresAt,
-        action
-      });
-    }
+    // Store in Firestore
+    await adminDb.collection("admin_otps").doc(emailKey).set({
+      otp,
+      expiresAt,
+      action
+    });
 
     // Send email using Resend if API key is provided
     if (process.env.RESEND_API_KEY) {
