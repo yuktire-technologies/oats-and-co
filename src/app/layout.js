@@ -40,6 +40,11 @@ export const metadata = {
     index: true,
     follow: true,
   },
+  icons: {
+    icon: "/oats_co_logo.png",
+    shortcut: "/oats_co_logo.png",
+    apple: "/oats_co_logo.png",
+  },
 };
 
 export default function RootLayout({ children }) {

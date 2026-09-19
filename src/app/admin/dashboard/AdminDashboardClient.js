@@ -48,6 +48,7 @@ export default function AdminDashboardClient({ initialOrders = [], initialCustom
   const [actionModal, setActionModal] = useState({ isOpen: false, type: "", orderId: null });
   const [rejectReason, setRejectReason] = useState("");
   const [customRejectReason, setCustomRejectReason] = useState("");
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const [visibleOrdersCount, setVisibleOrdersCount] = useState(10);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -82,6 +83,7 @@ export default function AdminDashboardClient({ initialOrders = [], initialCustom
   };
 
   const confirmAction = () => {
+    setIsProcessing(true);
     const { type, orderId } = actionModal;
 
     if (type === "accept") updateOrderStatus(orderId, "Accepted");
@@ -89,11 +91,12 @@ export default function AdminDashboardClient({ initialOrders = [], initialCustom
     else if (type === "deliver") updateOrderStatus(orderId, "Delivered");
     else if (type === "reject") {
       const reason = (rejectReason === "Other (write custom message)" || rejectReason === "Custom") ? customRejectReason : rejectReason;
-      if (!reason) return alert("Please select a reason");
+      if (!reason) {
+        setIsProcessing(false);
+        return alert("Please select a reason");
+      }
       updateOrderStatus(orderId, "Rejected", { rejectReason: reason });
     }
-
-    setActionModal({ isOpen: false, type: "", orderId: null });
   };
 
   // Handle Quick Filter click
@@ -505,6 +508,7 @@ export default function AdminDashboardClient({ initialOrders = [], initialCustom
               variant="outline"
               className="flex-1 font-bold"
               onClick={() => setActionModal({ isOpen: false, type: "", orderId: null })}
+              disabled={isProcessing}
             >
               No
             </Button>
@@ -513,8 +517,9 @@ export default function AdminDashboardClient({ initialOrders = [], initialCustom
               <Button
                 className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold"
                 onClick={confirmAction}
+                disabled={isProcessing}
               >
-                Accept
+                {isProcessing ? "Accepting..." : "Accept"}
               </Button>
             )}
 
@@ -522,9 +527,9 @@ export default function AdminDashboardClient({ initialOrders = [], initialCustom
               <Button
                 className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold"
                 onClick={confirmAction}
-                disabled={!rejectReason || ((rejectReason === "Other (write custom message)" || rejectReason === "Custom") && !customRejectReason.trim())}
+                disabled={isProcessing || (!rejectReason || ((rejectReason === "Other (write custom message)" || rejectReason === "Custom") && !customRejectReason.trim()))}
               >
-                Reject
+                {isProcessing ? "Rejecting..." : "Reject"}
               </Button>
             )}
 
@@ -532,8 +537,9 @@ export default function AdminDashboardClient({ initialOrders = [], initialCustom
               <Button
                 className="flex-1 bg-forest hover:bg-green text-white font-bold"
                 onClick={confirmAction}
+                disabled={isProcessing}
               >
-                Yes
+                {isProcessing ? (actionModal.type === "start" ? "Starting..." : actionModal.type === "deliver" ? "Completing..." : "Processing...") : "Yes"}
               </Button>
             )}
           </div>

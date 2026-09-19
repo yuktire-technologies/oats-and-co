@@ -9,47 +9,39 @@ export async function getCurrentUser() {
   if (!sessionCookie) return null;
 
 
-
-  if (sessionCookie && sessionCookie.includes("mock_customer")) {
-    if (sessionCookie.startsWith("mock_customer:")) {
-      try {
-        const parts = sessionCookie.split(":");
-        const uid = decodeURIComponent(parts[1] || "");
-        const phoneNumber = parts[2] ? decodeURIComponent(parts[2]) : "";
-        const displayName = parts[3] ? decodeURIComponent(parts[3]) : "";
-        if (uid) {
-          return {
-            uid,
-            phoneNumber,
-            displayName,
-            role: "customer"
-          };
-        }
-      } catch (e) { }
-    }
-    return {
-      uid: "user_customer_demo",
-      phoneNumber: "",
-      displayName: "",
-      role: "customer"
-    };
-  }
-
   try {
     if (adminAuth && isFirebaseConfigured) {
       const decodedClaims = await adminAuth.verifySessionCookie(sessionCookie, true);
+
+      // Enforce blocked user check securely on the server
+      if (adminDb && decodedClaims && decodedClaims.uid && decodedClaims.role !== "admin") {
+        try {
+          const userDoc = await adminDb.collection("users").doc(decodedClaims.uid).get();
+          if (userDoc.exists && userDoc.data().isBlocked) {
+            console.warn(`Blocked user attempted access: ${decodedClaims.uid}`);
+            return null; // Force logout / unauthorized state
+          }
+        } catch (dbErr) {
+          console.error("Error checking user blocked status:", dbErr);
+        }
+      }
+
       return decodedClaims;
     }
-    if (!isFirebaseConfigured && sessionCookie && !sessionCookie.includes("mock_customer")) {
-      return {
-        uid: "admin_dev",
-        email: "admin@oatsandco.in",
-        role: "admin"
-      };
+    
+    // Fallback if firebase isn't configured for local testing only
+    if (!isFirebaseConfigured && sessionCookie) {
+      if (sessionCookie.startsWith("admin_dev")) {
+        return {
+          uid: "admin_dev",
+          email: "admin@oatsandco.in",
+          role: "admin"
+        };
+      }
     }
     return null;
   } catch (error) {
-    if (!isFirebaseConfigured && sessionCookie && !sessionCookie.includes("mock_customer")) {
+    if (!isFirebaseConfigured && sessionCookie) {
       return {
         uid: "admin_dev",
         email: "admin@oatsandco.in",

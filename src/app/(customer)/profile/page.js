@@ -64,33 +64,15 @@ export default function ProfilePage() {
 
       if (data.needsSignup) {
         setIsSignupStep(true);
-      } else if (data.success || data.customToken) {
-        await loginWithCustomToken(
-          data.customToken || ("mock_demo_token_user_" + phoneNumber.replace(/\D/g, '')),
-          "customer",
-          data.user || { uid: `user_${phoneNumber.replace(/\D/g, '')}`, phoneNumber: fullPhone, displayName: "Customer" }
-        );
+      } else if (data.success && data.customToken) {
+        await loginWithCustomToken(data.customToken, "customer");
         router.push("/");
       } else {
         setError(data.error || "An error occurred");
       }
     } catch (err) {
-      // Local check fallback
-      try {
-        const savedReg = localStorage.getItem("registered_phone_numbers");
-        const registered = savedReg ? JSON.parse(savedReg) : [];
-        if (!registered.includes(fullPhone)) {
-          setIsSignupStep(true);
-          return;
-        }
-      } catch (e) { }
-
-      await loginWithCustomToken(
-        "mock_demo_token_user_" + phoneNumber.replace(/\D/g, ''),
-        "customer",
-        { uid: `user_${phoneNumber.replace(/\D/g, '')}`, phoneNumber: fullPhone, displayName: "Customer" }
-      );
-      router.push("/");
+      // Handle network errors or failure to retrieve token
+      setError(err.message || "Failed to login. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -133,7 +115,7 @@ export default function ProfilePage() {
           localStorage.setItem("registered_phone_numbers", JSON.stringify(registered));
         } catch (e) { }
 
-        await loginWithCustomToken(data.customToken, "customer", data.user);
+        await loginWithCustomToken(data.customToken, "customer");
         router.push("/");
       } else {
         setError(data.error || "An error occurred");
@@ -178,9 +160,9 @@ export default function ProfilePage() {
       const data = await res.json();
 
       if (res.ok && (data.success || data.user)) {
-        localStorage.setItem("mock_customer_user", JSON.stringify(updatedUser));
+        // No longer store mock customer user in localStorage
         if (data.customToken) {
-          await loginWithCustomToken(data.customToken, "customer", updatedUser);
+          await loginWithCustomToken(data.customToken, "customer");
         }
         setSaveSuccessMsg("Your name has been updated successfully.");
 

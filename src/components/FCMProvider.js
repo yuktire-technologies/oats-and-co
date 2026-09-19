@@ -3,8 +3,11 @@
 import { useEffect } from "react";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
 import app from "@/lib/firebase/client";
+import { useAuth } from "@/context/AuthContext";
 
 export default function FCMProvider() {
+  const { user } = useAuth();
+
   useEffect(() => {
     const requestPermissionAndGetToken = async () => {
       try {
@@ -16,7 +19,7 @@ export default function FCMProvider() {
               vapidKey: process.env.NEXT_PUBLIC_FCM_VAPID_KEY,
             });
 
-            if (currentToken) {
+            if (currentToken && user?.uid) {
               await fetch("/api/fcm/token", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -36,7 +39,6 @@ export default function FCMProvider() {
           const messaging = getMessaging(app);
           onMessage(messaging, (payload) => {
             console.log("Message received. ", payload);
-            // Optionally, we could show a toast here. But for now logging is fine.
           });
         }
       } catch (error) {
@@ -45,13 +47,12 @@ export default function FCMProvider() {
     };
 
     if (app && 'Notification' in window && 'serviceWorker' in navigator) {
-      // Small timeout to not block main thread on load
       setTimeout(() => {
         requestPermissionAndGetToken();
         listenForMessages();
       }, 2000);
     }
-  }, []);
+  }, [user?.uid]);
 
   return null;
 }

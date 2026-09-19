@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 
 function isAdminSession(sessionValue) {
   if (!sessionValue) return false;
-  if (sessionValue.includes("mock_customer")) return false;
   if (sessionValue.length > 50) return true;
   return false;
 }

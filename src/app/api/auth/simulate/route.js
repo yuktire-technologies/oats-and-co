@@ -64,9 +64,16 @@ export async function POST(request) {
 
           await adminDb.collection("users").doc(userDoc ? userDoc.id : mockUid).set(updatePayload, { merge: true });
 
+          let customToken;
+          if (adminAuth && isFirebaseConfigured) {
+            customToken = await adminAuth.createCustomToken(userDoc ? userDoc.id : mockUid);
+          } else {
+            customToken = "mock_demo_token_" + (userDoc ? userDoc.id : mockUid);
+          }
+
           return NextResponse.json({
             success: true,
-            customToken: "mock_demo_token_" + (userDoc ? userDoc.id : mockUid),
+            customToken,
             user: {
               uid: userDoc ? userDoc.id : mockUid,
               phoneNumber: formattedPhone,
@@ -85,9 +92,16 @@ export async function POST(request) {
     }
 
     // 3. Fallback successful signup response
+    let fallbackToken = "mock_demo_token_" + mockUid;
+    if (adminAuth && isFirebaseConfigured) {
+      try {
+        fallbackToken = await adminAuth.createCustomToken(mockUid);
+      } catch (e) {}
+    }
+
     return NextResponse.json({
       success: true,
-      customToken: "mock_demo_token_" + mockUid,
+      customToken: fallbackToken,
       user: {
         uid: mockUid,
         phoneNumber: formattedPhone,

@@ -516,7 +516,7 @@ export default function HomeClient({ initialItems, initialAddons = [], initialCo
 
           <div className="w-full md:w-60 h-40 rounded-2xl overflow-hidden border border-gray-200 shadow-xs shrink-0 relative bg-gray-50">
             <img
-              src="https://img.freepik.com/premium-photo/oats-food-hd-8k-wallpaper-stock-photographic-image_949228-47746.jpg"
+              src="https://res.cloudinary.com/qrfd0hd5/image/upload/q_auto,f_auto/v1789820229/oatsandco_homepage1.avif"
               alt="Oats & Co Banner"
               className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
               onError={(e) => { e.target.style.display = 'none'; }}
@@ -753,7 +753,7 @@ export default function HomeClient({ initialItems, initialAddons = [], initialCo
           {/* Left Image */}
           <div className="w-full md:w-60 h-40 rounded-2xl overflow-hidden border border-gray-200 shadow-xs shrink-0 relative bg-gray-50 z-10">
             <img
-              src="https://tse2.mm.bing.net/th/id/OIP.UvIn-Cqrox2rz3s1mKrtugHaHa?r=0&rs=1&pid=ImgDetMain&o=7&rm=3"
+              src="https://res.cloudinary.com/qrfd0hd5/image/upload/q_auto,f_auto/v1789820230/oatsandco_homepage2.jpg"
               alt="Start fresh Stay fit"
               className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
               onError={(e) => { e.target.style.display = 'none'; }}
@@ -981,7 +981,7 @@ export default function HomeClient({ initialItems, initialAddons = [], initialCo
               <span>Hurry! Delivery Closes in {remainingMinsText}</span>
             </div>
             <span className="text-[11px] font-mono bg-black/20 px-2 py-1 rounded-lg">
-              Until {formattedCloseTime}
+              Closes At {formattedCloseTime}
             </span>
           </div>
         </div>
