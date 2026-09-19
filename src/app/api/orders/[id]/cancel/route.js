@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth-server";
 import { adminDb, isFirebaseConfigured } from "@/lib/firebase/admin";
+import { sendNotification } from "@/lib/notifications";
 
 export async function POST(request, context) {
   try {
@@ -31,6 +32,18 @@ export async function POST(request, context) {
           cancelledBy: cancelledBy,
           updatedAt: new Date()
         });
+
+        const itemNames = orderData.items && orderData.items.length 
+          ? orderData.items.map(i => `${i.quantity || 1}x ${i.name}`).join(", ")
+          : `Order ${orderData.orderId || ""}`;
+        const bodyStr = `${itemNames} for ₹${orderData.grandTotal ?? 0}`;
+
+        sendNotification({
+          role: "admin",
+          title: "Order Cancelled",
+          body: bodyStr,
+          data: { url: `/admin/orders` }
+        }).catch(() => {});
 
         return NextResponse.json({ success: true }, { status: 200 });
       }
