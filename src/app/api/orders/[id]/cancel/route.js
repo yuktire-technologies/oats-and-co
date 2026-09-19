@@ -1,4 +1,4 @@
-import { NextResponse, after } from "next/server";
+import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth-server";
 import { adminDb, isFirebaseConfigured } from "@/lib/firebase/admin";
 import { sendNotification } from "@/lib/notifications";
@@ -38,7 +38,7 @@ export async function POST(request, context) {
           : `Order ${orderData.orderId || ""}`;
         const bodyStr = `${itemNames} for ₹${orderData.grandTotal ?? 0}`;
 
-        after(async () => {
+        try {
           await sendNotification({
             orderId: orderId,
             role: "admin",
@@ -46,7 +46,9 @@ export async function POST(request, context) {
             body: bodyStr,
             data: { url: `/admin/orders` }
           });
-        });
+        } catch (e) {
+          console.error("Cancel notification error:", e);
+        }
 
         return NextResponse.json({ success: true }, { status: 200 });
       }

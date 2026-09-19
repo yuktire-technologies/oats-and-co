@@ -1,4 +1,4 @@
-import { NextResponse, after } from "next/server";
+import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth-server";
 import { adminDb } from "@/lib/firebase/admin";
 import { sendNotification } from "@/lib/notifications";
@@ -45,7 +45,7 @@ export async function PATCH(request, context) {
         else if (status === "Delivered") title = "Order Delivered";
         else if (status === "Cancelled" || status === "Rejected") title = "Order Cancelled";
         
-        after(async () => {
+        try {
           await sendNotification({
             orderId: orderId,
             userId: oldOrderData.userId,
@@ -53,7 +53,9 @@ export async function PATCH(request, context) {
             body,
             data: { url: `/orders` }
           });
-        });
+        } catch (e) {
+          console.error("Status update notification error:", e);
+        }
       }
     } catch (e) {
       console.error("Failed to notify user on order update:", e);

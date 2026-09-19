@@ -1,4 +1,4 @@
-import { NextResponse, after } from "next/server";
+import { NextResponse } from "next/server";
 import { adminDb, isFirebaseConfigured } from "@/lib/firebase/admin";
 import { FieldValue } from "firebase-admin/firestore";
 import { getCurrentUser } from "@/lib/auth-server";
@@ -191,7 +191,7 @@ export async function POST(request) {
 
     const newOrderRef = await adminDb.collection("orders").add(orderData);
 
-    after(async () => {
+    try {
       await sendNotification({
         orderId: newOrderRef.id,
         role: "admin",
@@ -199,7 +199,9 @@ export async function POST(request) {
         body: `${validatedItems.length} items for ₹${grandTotal}`,
         data: { url: `/admin/orders` }
       });
-    });
+    } catch (e) {
+      console.error("Checkout notification error:", e);
+    }
 
     return NextResponse.json({ success: true, orderId, docId: newOrderRef.id }, { status: 200 });
 
