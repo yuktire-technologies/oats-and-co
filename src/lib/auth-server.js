@@ -60,10 +60,15 @@ export async function getCurrentUser() {
   }
 }
 
+export function isUserAdmin(user) {
+  if (!user) return false;
+  return user.role === "admin" || user.email === "admin@oatsandco.in" || user.email === "test@gmail.com";
+}
+
 export async function requireAdmin() {
   const user = await getCurrentUser();
 
-  if (user && (user.role === "admin" || user.email === "admin@oatsandco.in" || user.email === "test@gmail.com")) {
+  if (isUserAdmin(user)) {
     return user;
   }
 

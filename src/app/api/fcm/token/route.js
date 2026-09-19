@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getCurrentUser } from "@/lib/auth-server";
+import { getCurrentUser, isUserAdmin } from "@/lib/auth-server";
 import { adminDb } from "@/lib/firebase/admin";
 import { FieldValue } from "firebase-admin/firestore";
 
@@ -19,7 +19,7 @@ export async function POST(request) {
     await tokenDocRef.set({
       token,
       uid: user.uid,
-      role: user.role || "customer",
+      role: isUserAdmin(user) ? "admin" : "customer",
       updatedAt: FieldValue.serverTimestamp(),
     }, { merge: true });
 
