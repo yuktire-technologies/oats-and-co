@@ -89,12 +89,12 @@ export default function AdminOrdersClient({ initialPending, initialHistory }) {
 
   const renderOrderCard = (order) => (
     <div key={order.id} className="bg-white rounded-2xl p-5 shadow-sm border border-border-main flex flex-col gap-4 relative animate-fade-in">
-      <div className="flex justify-between items-start">
-        <div>
-          <span className="bg-forest/10 text-forest px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">{order.orderId}</span>
-          <span className="ml-2 font-bold text-sm text-text-muted">{order.status}</span>
+      <div className="flex justify-between items-start gap-2 flex-wrap sm:flex-nowrap">
+        <div className="flex items-center flex-wrap gap-2">
+          <span className="bg-forest/10 text-forest px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider shrink-0">{order.orderId}</span>
+          <span className="font-bold text-sm text-text-muted shrink-0">{order.status}</span>
         </div>
-        <div className="font-bold font-sans text-forest text-xl">₹{order.grandTotal}</div>
+        <div className="font-bold font-sans text-forest text-xl shrink-0">₹{order.grandTotal}</div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm font-sans text-text-main">
@@ -113,13 +113,13 @@ export default function AdminOrdersClient({ initialPending, initialHistory }) {
         <span className="text-text-muted">Items:</span> {order.items?.map(i => `${i.name} x${i.quantity}`).join(", ")}
       </div>
 
-      <div className="flex gap-3 mt-2 border-t border-border-main pt-4">
-        <Button variant="outline" className="flex-1" onClick={() => setSelectedOrder(order)}>View Details</Button>
+      <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mt-2 border-t border-border-main pt-4">
+        <Button variant="outline" className="w-full sm:flex-1" onClick={() => setSelectedOrder(order)}>View Details</Button>
         {order.status === "Pending" && (
-          <>
+          <div className="flex gap-2 sm:gap-3 w-full sm:flex-[2]">
             <Button className="flex-1 bg-red-600 hover:bg-red-700 text-white" onClick={() => handleAction("reject", order.id)}>Reject</Button>
             <Button className="flex-1 bg-green hover:bg-forest text-white" onClick={() => handleAction("accept", order.id)}>Accept</Button>
-          </>
+          </div>
         )}
       </div>
     </div>

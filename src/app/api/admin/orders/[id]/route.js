@@ -24,7 +24,7 @@ export async function PATCH(request, context) {
     if (!oldOrderDoc.exists) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
-    
+
     const oldOrderData = oldOrderDoc.data();
     if (oldOrderData.status === status) {
       // Prevent duplicate status updates and notifications
@@ -34,29 +34,22 @@ export async function PATCH(request, context) {
     await adminDb.collection("orders").doc(orderId).update(updateData);
 
     try {
-      const orderDoc = await adminDb.collection("orders").doc(orderId).get();
-      if (orderDoc.exists) {
-        const orderData = orderDoc.data();
-        let title = "Order Update";
-        let body = `Your order ${orderData.orderId} status is now ${status}.`;
+      let title = "Order Update";
+      let body = `Your order ${oldOrderData.orderId} status is now ${status}.`;
 
-        if (status === "Accepted") title = "Order Accepted";
-        else if (status === "Out for Delivery") title = "Order Out for Delivery";
-        else if (status === "Delivered") title = "Order Delivered";
-        else if (status === "Cancelled" || status === "Rejected") title = "Order Cancelled";
-        
-        try {
-          await sendNotification({
-            orderId: orderId,
-            userId: oldOrderData.userId,
-            title,
-            body,
-            data: { url: `/orders` }
-          });
-        } catch (e) {
-          console.error("Status update notification error:", e);
-        }
-      }
+      if (status === "Accepted") title = "Order Accepted";
+      else if (status === "On the Way") title = "Order On the Way";
+      else if (status === "Delivered") title = "Order Delivered";
+      else if (status === "Rejected") title = "Order Rejected";
+      else if (status === "Cancelled") title = "Order Cancelled";
+
+      await sendNotification({
+        orderId: orderId,
+        userId: oldOrderData.userId,
+        title,
+        body,
+        data: { url: `/orders` }
+      });
     } catch (e) {
       console.error("Failed to notify user on order update:", e);
     }
