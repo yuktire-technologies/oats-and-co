@@ -10,10 +10,12 @@ import { useAuth } from "@/context/AuthContext";
 export default function OrdersClient({ initialOrders }) {
   const { user, loading } = useAuth();
   const [orders, setOrders] = useState(initialOrders);
+  const [ordersLoading, setOrdersLoading] = useState(true);
 
   React.useEffect(() => {
     async function fetchUserOrders() {
       if (user && user.uid) {
+        setOrdersLoading(true);
         try {
           const query = new URLSearchParams();
           if (user.uid) query.set("userId", user.uid);
@@ -23,11 +25,13 @@ export default function OrdersClient({ initialOrders }) {
           if (res.ok) {
             const data = await res.json();
             setOrders(data.orders || []);
+            setOrdersLoading(false);
             return;
           }
         } catch (e) { }
       }
       setOrders(initialOrders || []);
+      setOrdersLoading(false);
     }
     fetchUserOrders();
   }, [user, initialOrders]);
@@ -81,7 +85,7 @@ export default function OrdersClient({ initialOrders }) {
     }, 250);
   };
 
-  if (loading) {
+  if (loading || (user && ordersLoading)) {
     return <div className="flex h-64 items-center justify-center text-text-muted font-sans">Loading orders...</div>;
   }
 

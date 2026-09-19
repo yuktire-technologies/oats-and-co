@@ -48,8 +48,69 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://oatsandco.in/#organization",
+        "name": "Oats & Co",
+        "url": "https://oatsandco.in",
+        "logo": "https://oatsandco.in/oats_co_logo.png",
+        "description": "Healthy, Nutritious, Natural, Made Fresh. Zero Added Sugar, Chef Crafted, Chef Fresh Daily, Built for Healthy Living.",
+        "sameAs": [
+          "https://www.instagram.com/the_oats_co"
+        ],
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Opposite Canara Bank, near vasavi medical hall, KN road",
+          "addressLocality": "Tadepalligudem",
+          "postalCode": "534101",
+          "addressCountry": "IN"
+        }
+      },
+      {
+        "@type": "Restaurant",
+        "@id": "https://oatsandco.in/#restaurant",
+        "name": "Oats & Co",
+        "url": "https://oatsandco.in",
+        "logo": "https://oatsandco.in/oats_co_logo.png",
+        "image": "https://oatsandco.in/oats_co_logo.png",
+        "servesCuisine": ["Healthy", "Breakfast", "Oatmeal", "Organic"],
+        "priceRange": "₹₹",
+        "currenciesAccepted": "INR",
+        "paymentAccepted": "Cash",
+        "sameAs": [
+          "https://www.instagram.com/the_oats_co"
+        ],
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Opposite Canara Bank, near vasavi medical hall, KN road",
+          "addressLocality": "Tadepalligudem",
+          "postalCode": "534101",
+          "addressCountry": "IN"
+        }
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://oatsandco.in/#website",
+        "url": "https://oatsandco.in",
+        "name": "Oats & Co",
+        "publisher": {
+          "@id": "https://oatsandco.in/#organization"
+        }
+      }
+    ]
+  };
+
   return (
     <html lang="en" className={`${fraunces.variable} ${plusJakarta.variable} h-full antialiased bg-cream text-text-main`}>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body className="min-h-full flex flex-col font-sans selection:bg-gold/30 selection:text-forest">
         <AuthProvider>
           <CartProvider>
