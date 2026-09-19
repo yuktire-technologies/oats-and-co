@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { adminAuth, isFirebaseConfigured } from "./firebase/admin";
+import { adminAuth, adminDb, isFirebaseConfigured } from "./firebase/admin";
 
 export async function getCurrentUser() {
   const cookieStore = await cookies();
