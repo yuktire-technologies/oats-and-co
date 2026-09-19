@@ -9,9 +9,9 @@ export async function POST(request) {
       return NextResponse.json({ error: "No ID token provided" }, { status: 401 });
     }
 
-    // Customer: 60 days persistent login
+    // Customer: 14 days persistent login (Firebase Max limit)
     // Admin: 7 days persistent login
-    const expiresIn = role === "admin" ? 60 * 60 * 24 * 7 * 1000 : 60 * 60 * 24 * 60 * 1000;
+    const expiresIn = role === "admin" ? 60 * 60 * 24 * 7 * 1000 : 60 * 60 * 24 * 14 * 1000;
 
     // Create session cookie from ID Token
     const sessionCookie = await adminAuth.createSessionCookie(idToken, { expiresIn });

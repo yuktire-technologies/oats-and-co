@@ -38,7 +38,7 @@ export async function getCurrentUser() {
 
       return decodedClaims;
     }
-    
+
     // Fallback if firebase isn't configured for local testing only
     if (!isFirebaseConfigured && sessionCookie) {
       if (sessionCookie.startsWith("admin_dev")) {
