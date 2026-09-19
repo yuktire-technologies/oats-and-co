@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { getCurrentUser } from "@/lib/auth-server";
 import { adminDb, isFirebaseConfigured } from "@/lib/firebase/admin";
 import { sendNotification } from "@/lib/notifications";
@@ -38,12 +38,15 @@ export async function POST(request, context) {
           : `Order ${orderData.orderId || ""}`;
         const bodyStr = `${itemNames} for ₹${orderData.grandTotal ?? 0}`;
 
-        sendNotification({
-          role: "admin",
-          title: "Order Cancelled",
-          body: bodyStr,
-          data: { url: `/admin/orders` }
-        }).catch(() => {});
+        after(async () => {
+          await sendNotification({
+            orderId: orderId,
+            role: "admin",
+            title: "Order Cancelled",
+            body: bodyStr,
+            data: { url: `/admin/orders` }
+          });
+        });
 
         return NextResponse.json({ success: true }, { status: 200 });
       }

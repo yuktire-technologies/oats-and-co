@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { adminDb, isFirebaseConfigured } from "@/lib/firebase/admin";
 import { FieldValue } from "firebase-admin/firestore";
 import { getCurrentUser } from "@/lib/auth-server";
@@ -191,12 +191,15 @@ export async function POST(request) {
 
     const newOrderRef = await adminDb.collection("orders").add(orderData);
 
-    sendNotification({
-      role: "admin",
-      title: "New Order Received",
-      body: `${validatedItems.length} items for ₹${grandTotal}`,
-      data: { url: `/admin/orders` }
-    }).catch(() => {});
+    after(async () => {
+      await sendNotification({
+        orderId: newOrderRef.id,
+        role: "admin",
+        title: "New Order Received",
+        body: `${validatedItems.length} items for ₹${grandTotal}`,
+        data: { url: `/admin/orders` }
+      });
+    });
 
     return NextResponse.json({ success: true, orderId, docId: newOrderRef.id }, { status: 200 });
 
