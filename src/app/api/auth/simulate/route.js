@@ -66,7 +66,27 @@ export async function POST(request) {
 
           let customToken;
           if (adminAuth && isFirebaseConfigured) {
-            customToken = await adminAuth.createCustomToken(userDoc ? userDoc.id : mockUid);
+            const uid = userDoc ? userDoc.id : mockUid;
+            try {
+              // Create or update the user in Firebase Auth so the client gets the correct phone and display name natively
+              try {
+                await adminAuth.updateUser(uid, {
+                  displayName: finalName,
+                  phoneNumber: formattedPhone
+                });
+              } catch (updateErr) {
+                if (updateErr.code === 'auth/user-not-found') {
+                  await adminAuth.createUser({
+                    uid: uid,
+                    displayName: finalName,
+                    phoneNumber: formattedPhone
+                  });
+                }
+              }
+            } catch (authSyncErr) {
+              console.error("Failed to sync user to Firebase Auth:", authSyncErr);
+            }
+            customToken = await adminAuth.createCustomToken(uid);
           } else {
             customToken = "mock_demo_token_" + (userDoc ? userDoc.id : mockUid);
           }
@@ -95,8 +115,17 @@ export async function POST(request) {
     let fallbackToken = "mock_demo_token_" + mockUid;
     if (adminAuth && isFirebaseConfigured) {
       try {
+        try {
+          await adminAuth.updateUser(mockUid, { displayName: name || "Customer", phoneNumber: formattedPhone });
+        } catch (updateErr) {
+          if (updateErr.code === 'auth/user-not-found') {
+            await adminAuth.createUser({ uid: mockUid, displayName: name || "Customer", phoneNumber: formattedPhone });
+          }
+        }
         fallbackToken = await adminAuth.createCustomToken(mockUid);
-      } catch (e) {}
+      } catch (e) {
+        console.error("Fallback sync error:", e);
+      }
     }
 
     return NextResponse.json({

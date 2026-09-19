@@ -13,6 +13,16 @@ export async function getCurrentUser() {
     if (adminAuth && isFirebaseConfigured) {
       const decodedClaims = await adminAuth.verifySessionCookie(sessionCookie, true);
 
+      // Fetch fresh claims from Firebase Auth in case the session cookie has stale claims (e.g. immediately after login)
+      try {
+        const authUser = await adminAuth.getUser(decodedClaims.uid);
+        if (authUser.customClaims && authUser.customClaims.role) {
+          decodedClaims.role = authUser.customClaims.role;
+        }
+      } catch (e) {
+        console.error("Error fetching fresh user claims:", e);
+      }
+
       // Enforce blocked user check securely on the server
       if (adminDb && decodedClaims && decodedClaims.uid && decodedClaims.role !== "admin") {
         try {
